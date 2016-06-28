@@ -63,7 +63,11 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		$profilerBlock = Mage::app()->getLayout()->createBlock('core/profiler');
 		$profilerBlock->setTitle($title);
 		$profilerBlock->setForceRender(TRUE);
-		$content = "<html><head>{$head->toHtml()}</head><body>{$profilerBlock->toHtml()}</body></html>";
+		$profilerBodyHtml = $profilerBlock->toHtml();
+		if (!$profilerBodyHtml){
+			return '';
+		}
+		$content = "<html><head>{$head->toHtml()}</head><body>{$profilerBodyHtml}</body></html>";
 
 		// Save HTML to file
 		$profileDir = Mage::getStoreConfig(self::XML_PATH_PROFILE_DIR,0) ?: Mage::getBaseDir('var') . DS . 'profile';

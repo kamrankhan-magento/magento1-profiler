@@ -203,6 +203,10 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		$this->stackLog = $stackModel->getStackLog();
 		$this->treeData = $stackModel->getTreeData();
 
+		if (!$this->stackLog){
+			return '';
+		}
+
 		// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
 		// That's why I'm embedding css here into the html code...
 		$output = '<style type="text/css">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/css/styles.css').'</style>';

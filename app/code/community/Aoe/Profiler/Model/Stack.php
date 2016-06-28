@@ -53,27 +53,29 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract {
 	protected function updateValues(&$arr, $vKey='') {
 
 		$subSum = array_flip($this->metrics);
-		foreach ($arr as $k => $v) {
+		if (is_array($arr)){
+			foreach ($arr as $k => $v) {
 
-			if (strpos($k, '_children') === false) {
+				if (strpos($k, '_children') === false) {
 
-				if (isset($arr[$k . '_children']) && is_array($arr[$k . '_children'])) {
-					$this->updateValues($arr[$k . '_children'], $v);
-				} else {
+					if (isset($arr[$k . '_children']) && is_array($arr[$k . '_children'])) {
+						$this->updateValues($arr[$k . '_children'], $v);
+					} else {
+						foreach ($subSum as $key => $value) {
+							$this->stackLog[$v][$key.'_sub'] = 0;
+							$this->stackLog[$v][$key.'_own'] = $this->stackLog[$v][$key.'_total'];
+						}
+					}
 					foreach ($subSum as $key => $value) {
-						$this->stackLog[$v][$key.'_sub'] = 0;
-						$this->stackLog[$v][$key.'_own'] = $this->stackLog[$v][$key.'_total'];
+						$subSum[$key] += $this->stackLog[$v][$key.'_total'];
 					}
 				}
-				foreach ($subSum as $key => $value) {
-					$subSum[$key] += $this->stackLog[$v][$key.'_total'];
-				}
 			}
-		}
-		if (isset($this->stackLog[$vKey])) {
-			foreach ($subSum as $key => $value) {
-				$this->stackLog[$vKey][$key.'_sub'] = $subSum[$key];
-				$this->stackLog[$vKey][$key.'_own'] = $this->stackLog[$vKey][$key.'_total'] - $subSum[$key];
+			if (isset($this->stackLog[$vKey])) {
+				foreach ($subSum as $key => $value) {
+					$this->stackLog[$vKey][$key.'_sub'] = $subSum[$key];
+					$this->stackLog[$vKey][$key.'_own'] = $this->stackLog[$vKey][$key.'_total'] - $subSum[$key];
+				}
 			}
 		}
 	}
